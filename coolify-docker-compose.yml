@@ -1,0 +1,90 @@
+services:
+  api:
+    image: ghcr.io/danny-avila/librechat-dev-api:latest
+    container_name: librechat-api
+    restart: always
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=3080
+      - MONGO_URI=mongodb://mongodb:27017/LibreChat
+      - DOMAIN_CLIENT=${DOMAIN_CLIENT}
+      - DOMAIN_SERVER=${DOMAIN_SERVER}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+      - CREDS_KEY=${CREDS_KEY}
+      - CREDS_IV=${CREDS_IV}
+      - ALLOW_REGISTRATION=${ALLOW_REGISTRATION:-true}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    depends_on:
+      - mongodb
+      - rag-api
+    volumes:
+      - librechat_data:/app/client/public/images
+      - ./logs:/app/api/logs
+
+  client:
+    image: ghcr.io/danny-avila/librechat-dev:latest
+    container_name: librechat-frontend
+    restart: always
+    environment:
+      - SERVER_API_URL=http://api:3080
+    depends_on:
+      - api
+
+  mongodb:
+    container_name: librechat-mongodb
+    image: mongo:6.0
+    restart: always
+    volumes:
+      - mongodb_data:/data/db
+    command: mongod --noauth
+
+  meilisearch:
+    container_name: librechat-meilisearch
+    image: getmeili/meilisearch:v1.11.4
+    restart: always
+    environment:
+      - MEILI_HOST=http://0.0.0.0:7700
+      - MEILI_NO_ANALYTICS=true
+      - MEILI_MASTER_KEY=${MEILI_MASTER_KEY}
+    volumes:
+      - meili_data:/meili_data
+
+  rag-api:
+    image: ghcr.io/danny-avila/librechat-rag-api-dev-lite:latest
+    container_name: librechat-rag-api
+    restart: always
+    environment:
+      - PORT=8000
+      - HOST=0.0.0.0
+      - DB_HOST=vector-db
+      - CHUNK_SIZE=1500
+      - CHUNK_OVERLAP=100
+      - COLLECTION_NAME=testcollection
+      - EMBEDDINGS_PROVIDER=openai
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    depends_on:
+      - vector-db
+
+  vector-db:
+    image: ankane/pgvector:latest
+    container_name: librechat-vector-db
+    restart: always
+    environment:
+      - POSTGRES_DB=mydatabase
+      - POSTGRES_USER=myuser
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-mypassword}
+    volumes:
+      - vector_data:/var/lib/postgresql/data
+
+volumes:
+  librechat_data:
+  mongodb_data:
+  meili_data:
+  vector_data:
+
+networks:
+  default:
+    name: librechat-network

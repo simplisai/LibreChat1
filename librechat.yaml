@@ -1,15 +1,22 @@
 version: 1.2.1
 cache: true
 
+# Interface personalizada Simplis.ai
 interface:
   customWelcome: "Bem-vindo ao Simplis.ai - Sua plataforma de IA conversacional"
-  
+  privacyPolicy:
+    externalUrl: 'https://simplis.ai/privacy'
+  termsOfService:
+    externalUrl: 'https://simplis.ai/terms'
+
+# Registro controlado
 registration:
   allowedDomains: []
 
-# Configuração do endpoint LiteLLM
+# Configuração dos endpoints
 endpoints:
   custom:
+    # Endpoint principal via LiteLLM
     - name: "Simplis AI Models"
       apiKey: "simplis-litellm-master-key-123"
       baseURL: "http://litellm:8000"
@@ -22,7 +29,7 @@ endpoints:
       summaryModel: "gpt-3.5-turbo"
       forcePrompt: false
       modelDisplayLabel: "Simplis AI"
-      iconURL: "/favicon-32x32.png"
+      iconURL: "/assets/favicon-32x32.png"
 
     # Endpoint OpenAI direto (backup)
     - name: "OpenAI Direct"
@@ -43,7 +50,11 @@ rateLimits:
     userMax: 50
     userWindowInMinutes: 60
 
-# File configuration
+# Configuração de arquivos
 fileConfig:
   serverFileSizeLimit: 100
   avatarSizeLimit: 2
+  
+# Configurações de conversação
+conversations:
+  maxTurn: 50

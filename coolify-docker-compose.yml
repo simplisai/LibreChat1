@@ -28,7 +28,7 @@ services:
       - litellm
     volumes:
       - ./librechat.yaml:/app/librechat.yaml
-      - ./branding/assets:/app/client/public/assets
+      # REMOVIDO: - ./branding/assets:/app/client/public/assets (causava problema)
       - librechat_images:/app/client/public/images
       - librechat_uploads:/app/uploads
       - librechat_logs:/app/api/logs
@@ -41,14 +41,10 @@ services:
     restart: always
     volumes:
       - ./litellm/litellm-config.yaml:/app/config.yaml
-      # Para Google Cloud (descomente se precisar)
-      # - ./litellm/application_default_credentials.json:/app/application_default_credentials.json
     ports:
       - "4000:8000"
     command: ["--config", "/app/config.yaml", "--port", "8000", "--num_workers", "8"]
     environment:
-      # Para Google Cloud (descomente se precisar)
-      # GOOGLE_APPLICATION_CREDENTIALS: /app/application_default_credentials.json
       REDIS_HOST: redis
       REDIS_PORT: 6379
     depends_on:

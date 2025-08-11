@@ -1,6 +1,6 @@
 services:
   api:
-    container_name: LibreChat
+    container_name: SimplisAI
     image: ghcr.io/danny-avila/librechat-dev:latest
     restart: always
     extra_hosts:
@@ -8,7 +8,7 @@ services:
     environment:
       - HOST=0.0.0.0
       - PORT=${PORT:-3080}
-      - MONGO_URI=mongodb://mongodb:27017/LibreChat
+      - MONGO_URI=${MONGO_URI}
       - MEILI_HOST=http://meilisearch:7700
       - RAG_PORT=${RAG_PORT:-8000}
       - RAG_API_URL=http://rag_api:${RAG_PORT:-8000}
@@ -18,26 +18,24 @@ services:
       - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
       - CREDS_KEY=${CREDS_KEY}
       - CREDS_IV=${CREDS_IV}
-      - ALLOW_REGISTRATION=${ALLOW_REGISTRATION:-true}
+      - ALLOW_REGISTRATION=false
+      - ALLOW_EMAIL_LOGIN=false
+      - ALLOW_SOCIAL_LOGIN=false
       - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - APP_TITLE=Simplis.ai
     depends_on:
-      - mongodb
       - rag_api
     volumes:
+      - ./librechat.yaml:/app/librechat.yaml
+      - ./branding/assets:/app/client/public/assets
       - librechat_images:/app/client/public/images
       - librechat_uploads:/app/uploads
       - librechat_logs:/app/api/logs
-
-  mongodb:
-    container_name: chat-mongodb
-    image: mongo:latest
-    restart: always
-    volumes:
-      - mongodb_data:/data/db
-    command: mongod --noauth
+    networks:
+      - simplis-network
 
   meilisearch:
-    container_name: chat-meilisearch
+    container_name: simplis-meilisearch
     image: getmeili/meilisearch:v1.12
     restart: always
     environment:
@@ -46,20 +44,24 @@ services:
       - MEILI_MASTER_KEY=${MEILI_MASTER_KEY}
     volumes:
       - meili_data:/meili_data
+    networks:
+      - simplis-network
 
   vectordb:
-    container_name: vectordb
+    container_name: simplis-vectordb
     image: ankane/pgvector:latest
     restart: always
     environment:
-      - POSTGRES_DB=mydatabase
-      - POSTGRES_USER=myuser
+      - POSTGRES_DB=simplisai
+      - POSTGRES_USER=simplis
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-mypassword}
     volumes:
       - pgdata:/var/lib/postgresql/data
+    networks:
+      - simplis-network
 
   rag_api:
-    container_name: rag_api
+    container_name: simplis-rag-api
     image: ghcr.io/danny-avila/librechat-rag-api-dev-lite:latest
     restart: always
     environment:
@@ -70,15 +72,18 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-mypassword}
     depends_on:
       - vectordb
+    networks:
+      - simplis-network
 
 volumes:
   librechat_images:
   librechat_uploads:
   librechat_logs:
-  mongodb_data:
   meili_data:
   pgdata:
 
 networks:
   default:
-    name: librechat-network
+    name: simplis-network
+  simplis-network:
+    name: simplis-network

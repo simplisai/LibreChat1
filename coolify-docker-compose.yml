@@ -25,12 +25,43 @@ services:
       - APP_TITLE=Simplis.ai
     depends_on:
       - rag_api
+      - litellm
     volumes:
       - ./librechat.yaml:/app/librechat.yaml
       - ./branding/assets:/app/client/public/assets
       - librechat_images:/app/client/public/images
       - librechat_uploads:/app/uploads
       - librechat_logs:/app/api/logs
+    networks:
+      - simplis-network
+
+  litellm:
+    container_name: simplis-litellm
+    image: ghcr.io/berriai/litellm:main-latest
+    restart: always
+    volumes:
+      - ./litellm/litellm-config.yaml:/app/config.yaml
+      # Para Google Cloud (descomente se precisar)
+      # - ./litellm/application_default_credentials.json:/app/application_default_credentials.json
+    ports:
+      - "4000:8000"
+    command: ["--config", "/app/config.yaml", "--port", "8000", "--num_workers", "8"]
+    environment:
+      # Para Google Cloud (descomente se precisar)
+      # GOOGLE_APPLICATION_CREDENTIALS: /app/application_default_credentials.json
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on:
+      - redis
+    networks:
+      - simplis-network
+
+  redis:
+    container_name: simplis-redis
+    image: redis:7-alpine
+    restart: always
+    volumes:
+      - redis_data:/data
     networks:
       - simplis-network
 
@@ -81,6 +112,7 @@ volumes:
   librechat_logs:
   meili_data:
   pgdata:
+  redis_data:
 
 networks:
   default:

@@ -1,0 +1,65 @@
+model_list:
+  # OpenAI Models
+  - model_name: gpt-4o
+    litellm_params:
+      model: gpt-4o
+      api_key: "os.environ/OPENAI_API_KEY"
+
+  - model_name: gpt-4o-mini
+    litellm_params:
+      model: gpt-4o-mini
+      api_key: "os.environ/OPENAI_API_KEY"
+
+  - model_name: gpt-3.5-turbo
+    litellm_params:
+      model: gpt-3.5-turbo
+      api_key: "os.environ/OPENAI_API_KEY"
+
+  # Anthropic Models (adicione sua chave se quiser)
+  # - model_name: claude-3-sonnet
+  #   litellm_params:
+  #     model: anthropic/claude-3-sonnet-20240229
+  #     api_key: "os.environ/ANTHROPIC_API_KEY"
+
+  # Groq Models (adicione sua chave se quiser)
+  # - model_name: llama-3-70b
+  #   litellm_params:
+  #     model: groq/llama3-70b-8192
+  #     api_key: "os.environ/GROQ_API_KEY"
+
+  # Azure OpenAI (configure se tiver)
+  # - model_name: azure-gpt-4
+  #   litellm_params:
+  #     model: azure/gpt-4
+  #     api_base: "https://your-resource.openai.azure.com/"
+  #     api_key: "os.environ/AZURE_OPENAI_API_KEY"
+  #     api_version: "2024-02-01"
+
+# Configurações do LiteLLM
+litellm_settings:
+  # Cache com Redis
+  cache: true
+  cache_params:
+    type: "redis"
+    host: "redis"
+    port: 6379
+    supported_call_types: ["acompletion", "completion", "embedding", "aembedding"]
+  
+  # Logging (opcional)
+  # success_callback: ["langfuse"]
+  
+  # Rate limiting
+  rpm_limit_per_key: 1000
+  max_budget_per_key: 100.0
+
+# Configurações gerais
+general_settings:
+  master_key: "simplis-litellm-master-key-123"
+  database_url: "postgresql://simplis:mypassword@vectordb:5432/litellm"
+  store_model_in_db: true
+
+# Configurações do servidor
+server_settings:
+  host: "0.0.0.0"
+  port: 8000
+  num_workers: 8

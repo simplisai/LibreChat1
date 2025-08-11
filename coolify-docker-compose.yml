@@ -19,7 +19,7 @@ services:
       - CREDS_KEY=${CREDS_KEY}
       - CREDS_IV=${CREDS_IV}
       - ALLOW_REGISTRATION=false
-      - ALLOW_EMAIL_LOGIN=false
+      - ALLOW_EMAIL_LOGIN=true
       - ALLOW_SOCIAL_LOGIN=false
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - APP_TITLE=Simplis.ai

@@ -15,25 +15,17 @@ model_list:
       model: gpt-3.5-turbo
       api_key: "os.environ/OPENAI_API_KEY"
 
-  # Anthropic Models (adicione sua chave se quiser)
+  # Anthropic Models (opcional - adicione ANTHROPIC_API_KEY se quiser)
   # - model_name: claude-3-sonnet
   #   litellm_params:
   #     model: anthropic/claude-3-sonnet-20240229
   #     api_key: "os.environ/ANTHROPIC_API_KEY"
 
-  # Groq Models (adicione sua chave se quiser)
+  # Groq Models (opcional - adicione GROQ_API_KEY se quiser)
   # - model_name: llama-3-70b
   #   litellm_params:
   #     model: groq/llama3-70b-8192
   #     api_key: "os.environ/GROQ_API_KEY"
-
-  # Azure OpenAI (configure se tiver)
-  # - model_name: azure-gpt-4
-  #   litellm_params:
-  #     model: azure/gpt-4
-  #     api_base: "https://your-resource.openai.azure.com/"
-  #     api_key: "os.environ/AZURE_OPENAI_API_KEY"
-  #     api_version: "2024-02-01"
 
 # Configurações do LiteLLM
 litellm_settings:
@@ -45,12 +37,12 @@ litellm_settings:
     port: 6379
     supported_call_types: ["acompletion", "completion", "embedding", "aembedding"]
   
-  # Logging (opcional)
-  # success_callback: ["langfuse"]
-  
   # Rate limiting
   rpm_limit_per_key: 1000
   max_budget_per_key: 100.0
+  
+  # Logging para debugging (opcional)
+  set_verbose: false
 
 # Configurações gerais
 general_settings:
